@@ -10,20 +10,19 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net;
 using System.Globalization;
+using System.IO;
 
 namespace WeatherAPI
 {
     public class WeatherAPI
     {
-
-    public static HttpListener listener;
+        public static HttpListener listener;
         public static string url = "http://localhost:8000/";
-
+        string apiKey = "";
         public static async Task Main(string[] args)
         {
             try
-            {
-             
+            {         
                 var api = new WeatherAPI();
                 api.StartServer();
             }
@@ -133,10 +132,14 @@ namespace WeatherAPI
 
         public async Task<DailyWeatherResponse> GetDailyWeather(string latitude, string longitude, string date)
         {
-            string apiKey = "75f7c3068f73d50652371bad88b14b81";
-
-        // Construct the URL with query parameters
-
+           
+            // Get my API Key
+            using (StreamReader reader = new StreamReader("C://Users/bryce/OneDrive/Documents/apiKey.txt"))
+            {
+                apiKey = reader.ReadLine();
+            }
+            
+            // Construct the URL with query parameters
             string apiUrl = $"https://api.openweathermap.org/data/3.0/onecall/day_summary?lat={latitude}&lon={longitude}&date={date}&appid={apiKey}";
 
             // Create an instance of HttpClient
@@ -171,11 +174,14 @@ namespace WeatherAPI
         }
 
         public async Task<CurrentWeatherResponse> GetCurrentWeather(string latitude, string longitude, int time)
-        {         
-            string apiKey = "75f7c3068f73d50652371bad88b14b81";
+        {
+            // Get my API Key
+            using (StreamReader reader = new StreamReader("C://Users/bryce/OneDrive/Documents/apiKey.txt"))
+            {
+                apiKey = reader.ReadLine();
+            }
 
             // Construct the URL with query parameters
-
             string apiUrl = $"https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={latitude}&lon={longitude}&dt={time}&appid={apiKey}";
 
             // Create an instance of HttpClient
