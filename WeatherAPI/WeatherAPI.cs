@@ -101,8 +101,7 @@ namespace WeatherAPI
                             // insert succcess into db
                         }
                         else
-                        {
-                            ReturnFailedRequest(resp, "Failed to make request to OpenWeatherMap");
+                        {                       
                             // insert failure into db
                         }
                     }
@@ -139,7 +138,7 @@ namespace WeatherAPI
             response.Close();
         }
 
-        public async Task<bool> GetDailyWeather(string latitude, string longitude, string date, HttpListenerResponse resp)
+        public async Task<bool> GetDailyWeather(string latitude, string longitude, string date, HttpListenerResponse resp) // This function allows us to get the min/max for the day
         {
            
             // Get my API Key
@@ -170,13 +169,17 @@ namespace WeatherAPI
                         // Alter raw data into standardized weather data, as depicted on websites
                         result.Temperature.Min = (result.Temperature.Min - 273.15) * 9 / 5 + 31;  // k to f
                         result.Temperature.Max = (result.Temperature.Max - 273.15) * 9 / 5 + 31;  // k to f
+                        result.Temperature.Night = (result.Temperature.Night - 273.15) * 9 / 5 + 31;  // k to f
+                        result.Temperature.Evening = (result.Temperature.Evening - 273.15) * 9 / 5 + 31;  // k to f
+                        result.Temperature.Morning = (result.Temperature.Morning - 273.15) * 9 / 5 + 31;  // k to f
+                        result.Pressure.Afternoon = Math.Round(result.Pressure.Afternoon * 0.02953, 2);  // mb to inHg
 
                         ReturnRequest(resp, result);
-
                         return true;
                     }
                     else
                     {
+                        ReturnFailedRequest(resp, "Failed to make request to OpenWeatherMap");
                         return false;
                     }
                 }
@@ -188,7 +191,7 @@ namespace WeatherAPI
             }
         }
 
-        public async Task<bool> GetCurrentWeather(string latitude, string longitude, int time, HttpListenerResponse resp)
+        public async Task<bool> GetCurrentWeather(string latitude, string longitude, int time, HttpListenerResponse resp) // This functions gives us the weather at a specific timestamp
         {
             // Get my API Key
             using (StreamReader reader = new StreamReader("C://Users/bryce/OneDrive/Documents/apiKey.txt"))
@@ -219,14 +222,16 @@ namespace WeatherAPI
                         result.Data[0].Temperature = (result.Data[0].Temperature - 273.15) * 9 / 5 + 31;  // k to f
                         result.Data[0].FeelsLike = (result.Data[0].FeelsLike - 273.15) * 9 / 5 + 31;  // k to f
                         result.Data[0].Pressure = Math.Round(result.Data[0].Pressure * 0.02953, 2);  // mb to inHg
-
+                        result.Data[0].WindSpeed = result.Data[0].WindSpeed * 2.23694;  // M/s to Mph 
                         ReturnRequest(resp, result);
 
                         return true;
                     }
                     else
                     {
+                        ReturnFailedRequest(resp, "Failed to make request to OpenWeatherMap");
                         return false;
+                        // Eventually insert into database log
                     }
                 }
                 catch (Exception ex)

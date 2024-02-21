@@ -57,7 +57,7 @@ namespace WeatherAPI
         public int Visibility { get; set; }
 
         [JsonProperty("wind_speed")]
-        public float WindSpeed { get; set; }
+        public double WindSpeed { get; set; }
 
         [JsonProperty("wind_deg")]
         public int WindDegree { get; set; }
